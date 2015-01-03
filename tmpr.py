@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import math as m
 import Tkinter as tk
+import ttk
 from Meter import *
 import requests
 from metar import Metar
@@ -11,7 +12,12 @@ class Appl(tk.Frame):
         self.grid(sticky=tk.N+tk.S+tk.E+tk.W)
         self.value=tk.StringVar()
         self.value.set(0)
+        self.locations=["KBIL","KBOS","KBZN","KMSP","KGPZ"]
+        self.location=tk.StringVar()
+        self.location.trace("w",self.setloc)
+        print self.locations
         self.createwidgets()
+        self.location.set(self.locations[0])
         #self.after(1*60*1000,func=self.getval)
 
     def createwidgets(self):
@@ -26,15 +32,25 @@ class Appl(tk.Frame):
         #                    font=("Helvetica",-20,""),relief="raised")
         #self.label.grid(row=0,column=1,sticky=tk.E)
         self.quitButton=tk.Button(self,text="Quit",
-                                  command=self.stats,relief="raised")
+                                  command=self.quit,relief="raised")
         self.quitButton.grid(row=0,column=0)
         #self.scale=tk.Scale(self,bg="#dfc0c0",activebackground="#800000",
         #                    variable=self.value, length=225,relief="raised",
         #                    resolution=0.3,from_=-5.1,to=101.1,
         #                    command=self.cmd)
         #self.scale.grid(row=1,column=0,sticky=tk.N+tk.S)
+        self.e=ttk.Combobox(self,values=self.locations,state='readonly',
+                            textvariable=self.location)
+        #self.e.state('readonly')
+        self.e.grid(row=0,column=1,sticky=tk.E)
         self.m=Meter(self,width=550,height=500,from_=-40,to=120,)
         self.m.grid(row=1,column=1)
+        #self.getval()
+
+    def setloc(self,*args):
+        print "setloc here", args
+        self.location.set(self.location.get().upper())
+        if hasattr(self, "callback"): self.after_cancel(self.callback)
         self.getval()
 
     def stats(self):
@@ -48,18 +64,18 @@ class Appl(tk.Frame):
 
     def getval(self):
         print "Callback here."
-        params={'station_ids':'kbil', 'chk_metars': 'true', 'std_trans':'standard'}
+        params={'station_ids': self.location.get(), 'chk_metars': 'true', 'std_trans':'standard'}
         r=requests.get("http://www.aviationweather.gov/adds/metars", params=params)
         w=r.text
-        ws=w.index("KBIL")
+        ws=w.index(self.location.get())
         w=w[ws:]
         we=w.index("<")
         w=w[:we]
-        print w
+        #print w
         self.st=Metar.Metar(w)
-        print self.st.string()
+        #print self.st.string()
         self.m.set(self.st.temp.value()*9./5.+32.0)
-        self.after(10*60*1000,func=self.getval)
+        self.callback=self.after(10*60*1000,func=self.getval)
 
 
 app=Appl()
