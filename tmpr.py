@@ -15,7 +15,7 @@ class Appl(tk.Frame):
         self.locations=["KBIL","KBOS","KBZN","KMSP","KGPZ"]
         self.location=tk.StringVar()
         self.location.trace("w",self.setloc)
-        print self.locations
+        #print self.locations
         self.createwidgets()
         self.location.set(self.locations[0])
         #self.after(1*60*1000,func=self.getval)
@@ -48,7 +48,7 @@ class Appl(tk.Frame):
         #self.getval()
 
     def setloc(self,*args):
-        print "setloc here", args
+        #print "setloc here", args
         self.location.set(self.location.get().upper())
         if hasattr(self, "callback"): self.after_cancel(self.callback)
         self.getval()
@@ -63,7 +63,7 @@ class Appl(tk.Frame):
         #self.m.set(x)
 
     def getval(self):
-        print "Callback here."
+        #print "Callback here."
         params={'station_ids': self.location.get(), 'chk_metars': 'true', 'std_trans':'standard'}
         r=requests.get("http://www.aviationweather.gov/adds/metars", params=params)
         w=r.text
