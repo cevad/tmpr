@@ -22,18 +22,18 @@ class Appl(tk.Frame):
 
     def createwidgets(self):
         top=self.winfo_toplevel()
-        top.resizable(0,0)
-        #top.rowconfigure(0,weight=1)
-        #top.columnconfigure(0,weight=1)
-        #self.rowconfigure(1,weight=1)
-        #self.columnconfigure(0,weight=1)
+        #top.resizable(0,0)
+        top.rowconfigure(0,weight=1)
+        top.columnconfigure(0,weight=1)
+        self.rowconfigure(1,weight=1)
+        self.columnconfigure(0,weight=1)
         #self.label=tk.Label(self,textvariable=self.value,width=5,
         #                    height=1,
         #                    font=("Helvetica",-20,""),relief="raised")
         #self.label.grid(row=0,column=1,sticky=tk.E)
         self.quitButton=tk.Button(self,text="Quit",
                                   command=self.quit,relief="raised")
-        self.quitButton.grid(row=0,column=0)
+        self.quitButton.grid(row=0,column=0,sticky=tk.W)
         #self.scale=tk.Scale(self,bg="#dfc0c0",activebackground="#800000",
         #                    variable=self.value, length=225,relief="raised",
         #                    resolution=0.3,from_=-5.1,to=101.1,
@@ -41,10 +41,9 @@ class Appl(tk.Frame):
         #self.scale.grid(row=1,column=0,sticky=tk.N+tk.S)
         self.e=ttk.Combobox(self,values=self.locations,state='readonly',
                             textvariable=self.location)
-        #self.e.state('readonly')
         self.e.grid(row=0,column=1,sticky=tk.E)
-        self.m=Meter(self,width=550,height=500,from_=-40,to=120,)
-        self.m.grid(row=1,column=1)
+        self.m=Meter(self,width=300,height=300,from_=-40,to=120,bg="#fee")
+        self.m.grid(row=1,column=0,columnspan=2,sticky=tk.W+tk.E+tk.N+tk.S)
         #self.getval()
 
     def setloc(self,*args):
