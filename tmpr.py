@@ -5,6 +5,7 @@ import ttk
 from Meter import *
 import requests
 from metar import Metar
+import datetime
 
 class Appl(tk.Frame):
     def __init__(self, master=None):
@@ -15,22 +16,18 @@ class Appl(tk.Frame):
         self.locations=["KBIL","KBOS","KBZN","KMSP","KGPZ"]
         self.location=tk.StringVar()
         self.location.trace("w",self.setloc)
-        #print self.locations
         self.createwidgets()
         self.location.set(self.locations[0])
-        #self.after(1*60*1000,func=self.getval)
+
 
     def createwidgets(self):
+        # Make top window resizeable.
         top=self.winfo_toplevel()
-        #top.resizable(0,0)
         top.rowconfigure(0,weight=1)
         top.columnconfigure(0,weight=1)
         self.rowconfigure(1,weight=1)
         self.columnconfigure(0,weight=1)
-        #self.label=tk.Label(self,textvariable=self.value,width=5,
-        #                    height=1,
-        #                    font=("Helvetica",-20,""),relief="raised")
-        #self.label.grid(row=0,column=1,sticky=tk.E)
+        # Quit Button
         self.quitButton=tk.Button(self,text="Quit",
                                   command=self.quit,relief="raised")
         self.quitButton.grid(row=0,column=0,sticky=tk.W)
@@ -42,9 +39,15 @@ class Appl(tk.Frame):
         self.e=ttk.Combobox(self,values=self.locations,state='readonly',
                             textvariable=self.location)
         self.e.grid(row=0,column=1,sticky=tk.E)
-        self.m=Meter(self,width=300,height=300,from_=-40,to=120,bg="#fee")
+        self.m=Meter(self,width=300,height=300,from_=-40,to=120)
         self.m.grid(row=1,column=0,columnspan=2,sticky=tk.W+tk.E+tk.N+tk.S)
-        #self.getval()
+        # time data
+        self.uptime=tk.StringVar()
+        self._tleft=ttk.Label(self,anchor=tk.CENTER,textvariable=self.uptime)
+        self._tleft.grid(row=1,column=0,sticky=tk.W+tk.S)
+        self.downtime=tk.StringVar()
+        self._tright=tk.Label(self,textvariable=self.downtime)
+        self._tright.grid(row=1,column=1,sticky=tk.E+tk.S)
 
     def setloc(self,*args):
         #print "setloc here", args
@@ -59,21 +62,26 @@ class Appl(tk.Frame):
 
     def cmd(self,x):
         pass
-        #self.m.set(x)
 
     def getval(self):
         #print "Callback here."
         params={'station_ids': self.location.get(), 'chk_metars': 'true', 'std_trans':'standard'}
-        r=requests.get("http://www.aviationweather.gov/adds/metars", params=params)
-        w=r.text
-        ws=w.index(self.location.get())
-        w=w[ws:]
-        we=w.index("<")
-        w=w[:we]
-        #print w
-        self.st=Metar.Metar(w)
-        #print self.st.string()
+        try:
+            r=requests.get("http://www.aviationweather.gov/adds/metars", params=params)
+            w=r.text
+            ws=w.index(self.location.get())
+            w=w[ws:]
+            we=w.index("<")
+            w=w[:we]
+            self.st=Metar.Metar(w)
+        except:
+            # Just use old values if connection problems
+            pass
         self.m.set(self.st.temp.value()*9./5.+32.0)
+        # update Labels in corners
+        self.uptime.set(str(self.st.time))
+        self.downtime.set(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")))
+        # Set up next check
         self.callback=self.after(10*60*1000,func=self.getval)
 
 
