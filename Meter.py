@@ -64,7 +64,7 @@ class Meter(tk.Canvas):
             self._majorticks.append(self.create_line(ix,iy,ox,oy,width=2))
             self._majorlabels.append(
                 self.create_text(tx,ty,
-                                 text="%4.1f"%th,
+                                 text="%4.0f"%th,
                                  font=("helvetica",-int(self.ringsize/30),"bold"))
             )
         self.bind('<Configure>',self.resize)
