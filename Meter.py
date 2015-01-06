@@ -8,6 +8,7 @@ class Meter(tk.Canvas):
                  tickminor=1,tickmajor=5,
                  **kwargs):
         tk.Canvas.__init__(self,master,highlightthickness=0,**kwargs)
+        self._x=0
         self._tickminor=tickminor
         self._tickmajor=tickmajor
         self.from_=float(from_)
@@ -98,7 +99,7 @@ class Meter(tk.Canvas):
                     self.cx+self.ringsize/2,
                     self.cy+self.ringsize/2)
         # Text Value
-        self.coords(self._txt,self.cx,self.cy*1.7)
+        self.coords(self._txt,self.cx,self.cy+self.ringsize/2)
         tsize=min(self.cx,self.cy)/5
         self.itemconfigure(self._txt,
                            font=("helvetica",-tsize,"italic"))
