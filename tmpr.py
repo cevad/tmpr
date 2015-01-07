@@ -48,6 +48,14 @@ class Appl(tk.Frame):
         self.downtime=tk.StringVar()
         self._tright=tk.Label(self,textvariable=self.downtime)
         self._tright.grid(row=1,column=1,sticky=tk.E+tk.S)
+        # site label
+        self._sitename=tk.StringVar()
+        self.site=ttk.Label(self, textvariable=self._sitename,
+                                 font=("Comic Sans", -24,''))
+        self.site.grid(row=1,column=0,columnspan=2,sticky=tk.S)
+        # bindings
+        
+
 
     def setloc(self,*args):
         #print "setloc here", args
@@ -74,6 +82,7 @@ class Appl(tk.Frame):
             we=w.index("<")
             w=w[:we]
             self.st=Metar.Metar(w)
+            self._sitename.set(params['station_ids'])
         except:
             # Just use old values if connection problems
             pass
