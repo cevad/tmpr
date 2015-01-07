@@ -36,7 +36,7 @@ class Meter(tk.Canvas):
                                   width=2,arrow=tk.LAST,arrowshape=(24,30,10))
         # The text value.
         tsize=min(self.cx,self.cy)/5
-        self._txt=self.create_text(self.cx,self.cy*1.8,text="",
+        self._txt=self.create_text(0,0,text="",
                                   font=("helvetica",-tsize,"italic"))
         # Minor ticks
         self._minorticks=[]
@@ -67,6 +67,8 @@ class Meter(tk.Canvas):
                                  text="%4.0f"%th,
                                  font=("helvetica",-int(self.ringsize/30),"bold"))
             )
+        # test bindings
+        # Working Bindings
         self.bind('<Configure>',self.resize)
 
     def set(self,x):
@@ -99,7 +101,7 @@ class Meter(tk.Canvas):
                     self.cx+self.ringsize/2,
                     self.cy+self.ringsize/2)
         # Text Value
-        self.coords(self._txt,self.cx,self.cy+self.ringsize/2)
+        self.coords(self._txt,self.cx,self.cy+int(self.ringsize/2.5))
         tsize=min(self.cx,self.cy)/5
         self.itemconfigure(self._txt,
                            font=("helvetica",-tsize,"italic"))
