@@ -67,8 +67,6 @@ class Meter(tk.Canvas):
                                  text="%4.0f"%th,
                                  font=("helvetica",-int(self.ringsize/30),"bold"))
             )
-        # test bindings
-        # Working Bindings
         self.bind('<Configure>',self.resize)
 
     def set(self,x):
