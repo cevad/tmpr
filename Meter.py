@@ -1,6 +1,8 @@
 #!
 import math as m
 import Tkinter as tk
+from sys import float_info as sfi
+import sys
 
 class Meter(tk.Canvas):
     """ DOC STRING """
@@ -9,6 +11,8 @@ class Meter(tk.Canvas):
                  **kwargs):
         tk.Canvas.__init__(self,master,highlightthickness=0,**kwargs)
         self._x=0
+        self._high=-sfi.min
+        self._low=sfi.max
         self._tickminor=tickminor
         self._tickmajor=tickmajor
         self.from_=float(from_)
@@ -18,6 +22,21 @@ class Meter(tk.Canvas):
         dotsize=15
         self.ringsize=min(self.cx, self.cy)*1.6
         self._ids={}
+        # High/Low wedges
+        self._ids['high']=self.create_arc(self.cx-self.ringsize/2,
+                                   self.cy-self.ringsize/2,
+                                   self.cx+self.ringsize/2,
+                                   self.cy+self.ringsize/2,
+                                   style=tk.PIESLICE,fill="#fdd",
+                                   width=0,
+                                   start=-45, extent=135)
+        self._ids['low']=self.create_arc(self.cx-self.ringsize/2,
+                                  self.cy-self.ringsize/2,
+                                  self.cx+self.ringsize/2,
+                                  self.cy+self.ringsize/2,
+                                  style=tk.PIESLICE,fill="#ccf",
+                                  width=0,
+                                  start=90, extent=135)
         # The dot in the center
         self._ids['oval']=self.create_oval(self.cx-dotsize/2,self.cy-dotsize/2,
                          self.cx+dotsize/2,self.cy+dotsize/2,
@@ -27,9 +46,9 @@ class Meter(tk.Canvas):
                                          self.cy-self.ringsize/2,
                                          self.cx+self.ringsize/2,
                                          self.cy+self.ringsize/2,
-                        style=tk.ARC,
-                        start=-45, extent=270,
-                        width=3)
+                                         style=tk.ARC,
+                                         start=-45, extent=270,
+                                         width=3)
         # The meter pointer
         self._ptr=self.create_line(self.cx,self.cy,
                                   0,0,
@@ -77,6 +96,20 @@ class Meter(tk.Canvas):
         py=self.ringsize/2.0*m.sin(theta)++self.cy
         self.coords(self._ptr,self.cx,self.cy,px,py)
         self.itemconfigure(self._txt, text="%4.1f"%x)
+        if self._x>self._high: self._high=self._x
+        if self._x<self._low: self._low=self._x
+        thetaH=(3./4.+(self._high-self.from_)/(self.to-self.from_)*3./2.)*m.pi
+        thetaL=(3./4.+(self._low-self.from_)/(self.to-self.from_)*3./2.)*m.pi
+        self.itemconfigure(self._ids['high'],
+                           start=-theta/m.pi*180,
+                           extent=-(thetaH-theta)/m.pi*180)
+        self.itemconfigure(self._ids['low'],
+                           start=-theta/m.pi*180,
+                           extent=-(thetaL-theta)/m.pi*180)
+    def reset(self):
+        self._high=self._x
+        self._low=self._x
+        self.set(self._x)
 
     def stats(self):
         print self.coords(self._ptr)
@@ -94,6 +127,18 @@ class Meter(tk.Canvas):
                     self.cx+dotsize/2,self.cy+dotsize/2)
         # The meter arc
         self.coords(self._ids['arc'],
+                    self.cx-self.ringsize/2,
+                    self.cy-self.ringsize/2,
+                    self.cx+self.ringsize/2,
+                    self.cy+self.ringsize/2)
+        # High Wedge
+        self.coords(self._ids['high'],
+                    self.cx-self.ringsize/2,
+                    self.cy-self.ringsize/2,
+                    self.cx+self.ringsize/2,
+                    self.cy+self.ringsize/2)
+        # Low Wedge
+        self.coords(self._ids['low'],
                     self.cx-self.ringsize/2,
                     self.cy-self.ringsize/2,
                     self.cx+self.ringsize/2,

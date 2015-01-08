@@ -33,6 +33,10 @@ class Appl(tk.Frame):
         self.quitButton=tk.Button(self,text="Quit",
                                   command=self.quit,relief="raised")
         self.quitButton.grid(row=0,column=0,sticky=tk.W)
+        # Reset Button
+        self.resetButton=tk.Button(self,text="Reset",
+                                  command=self.reset,relief="raised")
+        self.resetButton.grid(row=0,column=0,sticky=tk.E)
         # To enter station id
         self.e=ttk.Combobox(self,values=self.locations,#state='readonly',
                             textvariable=self.location)
@@ -55,6 +59,9 @@ class Appl(tk.Frame):
         # bindings
         self.e.bind("<<ComboboxSelected>>",self.setloc)
         self.e.bind("<Return>",self.keyhandler)
+
+    def reset(self):
+        self.m.reset()
 
     def keyhandler(self,event):
         """ Only allow 4 letter strings through to be fetched"""
