@@ -29,6 +29,9 @@ class Appl(tk.Frame):
         top.columnconfigure(0,weight=1)
         self.rowconfigure(1,weight=1)
         self.columnconfigure(0,weight=1)
+
+        self.grip=ttk.Sizegrip(self)
+        self.grip.grid(row=2,column=1,sticky=tk.SE)
         # Quit Button
         self.quitButton=tk.Button(self,text="Quit",
                                   command=self.quit,relief="raised")
