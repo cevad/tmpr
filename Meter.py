@@ -1,4 +1,4 @@
-#!
+#!/usr/bin/python
 import math as m
 import Tkinter as tk
 from sys import float_info as sfi
@@ -95,7 +95,7 @@ class Meter(tk.Canvas):
         px=self.ringsize/2.0*m.cos(theta)+self.cx
         py=self.ringsize/2.0*m.sin(theta)++self.cy
         self.coords(self._ptr,self.cx,self.cy,px,py)
-        self.itemconfigure(self._txt, text="%4.1f"%x)
+        self.itemconfigure(self._txt, text="%4.0f"%x)
         if self._x>self._high: self._high=self._x
         if self._x<self._low: self._low=self._x
         thetaH=(3./4.+(self._high-self.from_)/(self.to-self.from_)*3./2.)*m.pi
