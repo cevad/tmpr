@@ -2,9 +2,9 @@
 import math as m
 import Tkinter as tk
 import ttk
+import xml.etree.ElementTree as ET
 from Meter import *
 import requests
-from metar import Metar
 import datetime
 
 #evnt=0  #dbg global
@@ -83,24 +83,22 @@ class Appl(tk.Frame):
         pass
 
     def getval(self):
-        params={'station_ids': self.location.get(), 'chk_metars': 'true', 'std_trans':'standard'}
+        params={'sid': self.location.get(), 'num': '1'}
+        dsource="http://www.wrh.noaa.gov/mesowest/getobextXml.php"
         try:
-            r=requests.get("http://www.aviationweather.gov/adds/metars", params=params)
-            w=r.text
-            ws=w.index(self.location.get())
-            w=w[ws:]
-            we=w.index("<")
-            w=w[:we]
-            self.st=Metar.Metar(w)
-            if self.st.temp.value():
-                self._sitename.set(params['station_ids'])
-                self.m.set(self.st.temp.value()*9./5.+32.0)
+            r=requests.get(dsource, params=params)
+            self.xmlroot=ET.fromstring(r.text)
+            ob=self.xmlroot[0]
+            vars={i.get('var'):i.get('value') for i in ob}
+            t=ob.get('time')
+            self.m.set(vars['T'])
+            self._sitename.set(params['sid'])
         except:
             # Just use old values if connection problems
             pass
         # update Labels in corners
-        self.uptime.set(str(self.st.time))
-        self.downtime.set(str(datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")))
+        self.uptime.set(t)
+        self.downtime.set(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         # Set up next check
         self.callback=self.after(10*60*1000,func=self.getval)
 #        self.callback=self.after(1*60*1000,func=self.getval)
