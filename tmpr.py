@@ -91,13 +91,16 @@ class Appl(tk.Frame):
             ob=self.xmlroot[0]
             vars={i.get('var'):i.get('value') for i in ob}
             t=ob.get('time')
+            t=str(datetime.datetime.now().year)+' '+t
+            t=t[:-4]
+            t1=datetime.datetime.strptime(t,"%Y %d %b %I:%M %p")
+            self.uptime.set(t1.isoformat(' '))
             self.m.set(vars['T'])
             self._sitename.set(params['sid'])
         except:
             # Just use old values if connection problems
             pass
         # update Labels in corners
-        self.uptime.set(t)
         self.downtime.set(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         # Set up next check
         self.callback=self.after(10*60*1000,func=self.getval)
