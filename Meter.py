@@ -111,6 +111,14 @@ class Meter(tk.Canvas):
         self._low=self._x
         self.set(self._x)
 
+    def resethigh(self):
+        self._high=self._x
+        self.set(self._x)
+
+    def resetlow(self):
+        self._low=self._x
+        self.set(self._x)
+
     def stats(self):
         print self.coords(self._ptr)
         print  self.r
