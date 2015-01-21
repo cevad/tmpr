@@ -15,7 +15,7 @@ class Appl(tk.Frame):
         self.grid(sticky=tk.N+tk.S+tk.E+tk.W)
         self.value=tk.StringVar()
         self.value.set(0)
-        self.locations=["KBIL","KBOS","KBZN","KMSP","KGPZ"]
+        self.locations=["KBIL","KBOS","KBZN","KMSP","KGPZ","PHNL","CYMO"]
         self.location=tk.StringVar()
         self.createwidgets()
         self.location.set(self.locations[0])
@@ -33,13 +33,21 @@ class Appl(tk.Frame):
         self.grip=ttk.Sizegrip(self)
         self.grip.grid(row=2,column=1,sticky=tk.SE)
         # Quit Button
-        self.quitButton=tk.Button(self,text="Quit",
+        # Buttons
+        self.buttonFrame=tk.Frame(self)
+        self.buttonFrame.grid(row=0,column=0,sticky=tk.N+tk.E+tk.W+tk.S)
+        self.quitButton=tk.Button(self.buttonFrame,text="Quit",
                                   command=self.quit,relief="raised")
-        self.quitButton.grid(row=0,column=0,sticky=tk.W)
-        # Reset Button
-        self.resetButton=tk.Button(self,text="Reset",
+        self.quitButton.pack(side=tk.LEFT)
+        self.resetButton=tk.Button(self.buttonFrame,text="Reset",
                                   command=self.reset,relief="raised")
-        self.resetButton.grid(row=0,column=0,sticky=tk.E)
+        self.resetButton.pack(side=tk.LEFT)
+        self.resethighButton=tk.Button(self.buttonFrame,text="Reset High",
+                                  command=self.resethigh,relief="raised")
+        self.resethighButton.pack(side=tk.LEFT)
+        self.resetlowButton=tk.Button(self.buttonFrame,text="Reset Low",
+                                  command=self.resetlow,relief="raised")
+        self.resetlowButton.pack(side=tk.LEFT)
         # To enter station id
         self.e=ttk.Combobox(self,values=self.locations,#state='readonly',
                             textvariable=self.location)
@@ -65,6 +73,10 @@ class Appl(tk.Frame):
 
     def reset(self):
         self.m.reset()
+    def resethigh(self):
+        self.m.resethigh()
+    def resetlow(self):
+        self.m.resetlow()
 
     def keyhandler(self,event):
         """ Only allow 4 letter strings through to be fetched"""
