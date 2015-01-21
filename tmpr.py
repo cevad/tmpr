@@ -83,30 +83,39 @@ class Appl(tk.Frame):
         pass
 
     def getval(self):
-        params={'sid': self.location.get(), 'num': '1'}
-        dsource="http://www.wrh.noaa.gov/mesowest/getobextXml.php"
         try:
-            r=requests.get(dsource, params=params)
-            self.xmlroot=ET.fromstring(r.text)
-            ob=self.xmlroot[0]
-            vars={i.get('var'):i.get('value') for i in ob}
-            t=ob.get('time')
-            t=str(datetime.datetime.now().year)+' '+t
-            t=t[:-4]
-            t1=datetime.datetime.strptime(t,"%Y %d %b %I:%M %p")
-            self.uptime.set(t1.isoformat(' '))
-            self.m.set(vars['T'])
-            self._sitename.set(params['sid'])
+            wxdat=getwx(self.location.get())
+            self.uptime.set(wxdat['time'])
+            self.m.set(wxdat['T'])
+            self._sitename.set(wxdat['sid'])
         except:
             # Just use old values if connection problems
             pass
-        # update Labels in corners
         self.downtime.set(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         # Set up next check
         self.callback=self.after(10*60*1000,func=self.getval)
 #        self.callback=self.after(1*60*1000,func=self.getval)
 
+def getwx(sid):
+    if type(sid)!=str:raise TypeError("getwx needs string argumenmt")
+    sid=sid.upper()
+    if len(sid)!=4:raise ValueError("getwx needs icao ident")
+    params={'sid': sid, 'num': '1'}
+    dsource="http://www.wrh.noaa.gov/mesowest/getobextXml.php"
+    r=requests.get(dsource, params=params)
+    xmlroot=ET.fromstring(r.text)
+    ob=xmlroot[0]
+    dat={i.get('var'):i.get('value') for i in ob}
+    t=ob.get('time')
+    t=str(datetime.datetime.now().year)+' '+t
+    t=t[:-4]
+    t1=datetime.datetime.strptime(t,"%Y %d %b %I:%M %p")
+    dat['time']=str(t1)
+    dat['sid']=sid
+    return dat
 
-app=Appl()
-app.master.title('Meter Widget')
-app.mainloop()
+
+if __name__=='__main__':
+    app=Appl()
+    app.master.title('Meter Widget')
+    app.mainloop()
