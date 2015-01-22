@@ -30,8 +30,12 @@ class Appl(tk.Frame):
         self.rowconfigure(1,weight=1)
         self.columnconfigure(0,weight=1)
 
-        self.grip=ttk.Sizegrip(self)
-        self.grip.grid(row=2,column=1,sticky=tk.SE)
+        # Bottom Frame
+        self.bottomFrame=tk.Frame(self)
+        self.bottomFrame.grid(row=2,column=0,columnspan=2,sticky=tk.E+tk.W+tk.S)
+        self.bottomFrame.columnconfigure(0,weight=1)
+        self.grip=ttk.Sizegrip(self.bottomFrame)
+        self.grip.grid(row=0,column=2,sticky=tk.SE)
         # Quit Button
         # Buttons
         self.buttonFrame=tk.Frame(self)
@@ -57,16 +61,16 @@ class Appl(tk.Frame):
         self.m.grid(row=1,column=0,columnspan=2,sticky=tk.W+tk.E+tk.N+tk.S)
         # time data
         self.uptime=tk.StringVar()
-        self._tleft=ttk.Label(self,anchor=tk.CENTER,textvariable=self.uptime)
-        self._tleft.grid(row=1,column=0,sticky=tk.W+tk.S)
+        self._tleft=tk.Label(self.bottomFrame,anchor=tk.CENTER,textvariable=self.uptime)
+        self._tleft.grid(row=0,column=1,sticky=tk.NE)
         self.downtime=tk.StringVar()
-        self._tright=tk.Label(self,textvariable=self.downtime)
-        self._tright.grid(row=1,column=1,sticky=tk.E+tk.S)
+        self._tright=tk.Label(self.bottomFrame,textvariable=self.downtime)
+        self._tright.grid(row=0,column=1,sticky=tk.SE)
         # site label
         self._sitename=tk.StringVar()
-        self.site=ttk.Label(self, textvariable=self._sitename,
-                                 font=("Comic Sans", -24,''))
-        self.site.grid(row=1,column=0,columnspan=2,sticky=tk.S)
+        self.site=tk.Label(self.bottomFrame, textvariable=self._sitename,
+                                 font=("Sans", -24,''))
+        self.site.grid(row=0,column=0,sticky=tk.S+tk.E+tk.W)
         # bindings
         self.e.bind("<<ComboboxSelected>>",self.setloc)
         self.e.bind("<Return>",self.keyhandler)

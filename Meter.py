@@ -18,7 +18,7 @@ class Meter(tk.Canvas):
         self.from_=float(from_)
         self.to=float(to)
         self.cx=int(self.config("width")[4])/2
-        self.cy=int(self.config("height")[4])/1.95
+        self.cy=int(self.config("height")[4])/2
         dotsize=15
         self.ringsize=min(self.cx, self.cy)*1.6
         self._ids={}
