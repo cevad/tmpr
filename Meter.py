@@ -10,6 +10,9 @@ class Meter(tk.Canvas):
                  tickminor=1,tickmajor=5,
                  **kwargs):
         tk.Canvas.__init__(self,master,highlightthickness=0,**kwargs)
+        self.r=0.9
+        self.dotsize=15
+        self.ring=0.8
         self._x=0
         self._high=-sfi.min
         self._low=sfi.max
@@ -17,10 +20,7 @@ class Meter(tk.Canvas):
         self._tickmajor=tickmajor
         self.from_=float(from_)
         self.to=float(to)
-        self.cx=int(self.config("width")[4])/2
-        self.cy=int(self.config("height")[4])/2
-        dotsize=15
-        self.ringsize=min(self.cx, self.cy)*1.6
+        self.setsizes(int(self.config("width")[4]),int(self.config("height")[4]))
         self._ids={}
         # High/Low wedges
         self._ids['high']=self.create_arc(self.cx-self.ringsize/2,
@@ -38,8 +38,8 @@ class Meter(tk.Canvas):
                                   width=0,
                                   start=90, extent=135)
         # The dot in the center
-        self._ids['oval']=self.create_oval(self.cx-dotsize/2,self.cy-dotsize/2,
-                         self.cx+dotsize/2,self.cy+dotsize/2,
+        self._ids['oval']=self.create_oval(self.cx-self.dotsize/2,self.cy-self.dotsize/2,
+                         self.cx+self.dotsize/2,self.cy+self.dotsize/2,
                          fill="#000")
         # The Arc of the meter
         self._ids['arc']=self.create_arc(self.cx-self.ringsize/2,
@@ -123,16 +123,23 @@ class Meter(tk.Canvas):
         print self.coords(self._ptr)
         print  self.r
 
+    def setsizes(self,width,height):
+        h=min(height,self.r*width)
+        w=min(width,height/self.r)
+        hm=(height-h)/2
+        wm=(width-w)/2
+        self.cx=int(width/2)
+        self.cy=int(height/2+w*(1-self.r)/2)
+        self.ringsize=w*self.ring
+        
+
     def resize(self,event):
         self.configure(height=event.height,width=event.width)
-        self.cx=int(self.config("width")[4])/2
-        self.cy=int(int(self.config("height")[4])/1.92)
-        dotsize=15
-        self.ringsize=min(self.cx, self.cy)*1.6
+        self.setsizes(event.width,event.height)
         # The Dot at the center
         self.coords(self._ids['oval'],
-                    self.cx-dotsize/2,self.cy-dotsize/2,
-                    self.cx+dotsize/2,self.cy+dotsize/2)
+                    self.cx-self.dotsize/2,self.cy-self.dotsize/2,
+                    self.cx+self.dotsize/2,self.cy+self.dotsize/2)
         # The meter arc
         self.coords(self._ids['arc'],
                     self.cx-self.ringsize/2,
@@ -153,7 +160,7 @@ class Meter(tk.Canvas):
                     self.cy+self.ringsize/2)
         # Text Value
         self.coords(self._txt,self.cx,self.cy+int(self.ringsize/2.5))
-        tsize=min(self.cx,self.cy)/5
+        tsize=int(min(self.cx,self.cy)/5)
         self.itemconfigure(self._txt,
                            font=("helvetica",-tsize,"italic"))
         #the pointer
