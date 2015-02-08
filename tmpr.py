@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/c/Anaconda/python
 import math as m
 import Tkinter as tk
 import ttk
@@ -6,16 +6,17 @@ import xml.etree.ElementTree as ET
 from Meter import *
 import requests
 import datetime
+import ConfigParser
 
 #evnt=0  #dbg global
 
 class Appl(tk.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master=None,locations=None):
         tk.Frame.__init__(self,master)
         self.grid(sticky=tk.N+tk.S+tk.E+tk.W)
         self.value=tk.StringVar()
         self.value.set(0)
-        self.locations=["KBIL","KBOS","KBZN","KMSP","KGPZ","PHNL","CYMO"]
+        self.locations=locations
         self.location=tk.StringVar()
         self.createwidgets()
         self.location.set(self.locations[0])
@@ -86,7 +87,10 @@ class Appl(tk.Frame):
         """ Only allow 4 letter strings through to be fetched"""
         sin=self.location.get()
         if len(sin) == 4:
+            self.location.set(self.location.get().upper())
             self.setloc()
+            self.locations.append(sin)
+            self.e.configure(values=self.locations)
         else:
             self.location.set("")
 
@@ -132,6 +136,23 @@ def getwx(sid):
 
 
 if __name__=='__main__':
-    app=Appl()
+    cfg=ConfigParser.SafeConfigParser()
+    cfgsection='ICAO sites'
+    cfgfile="tmprconfig.txt"
+    try:
+        cfg.read("tmprconfig.txt")
+        sites=cfg.items(cfgsection)
+        locations=[]
+        for i in sites:
+            locations.append(i[0].upper())
+    except:
+        locations=["KBIL","KBOS","KBZN","KMSP","KGPZ","PHNL","CYMO"]
+    app=Appl(locations=locations)
     app.master.title('Meter Widget')
     app.mainloop()
+    cfg.remove_section(cfgsection)
+    cfg.add_section(cfgsection)
+    for i in app.locations:
+        cfg.set(cfgsection,i,'')
+    cfp=open(cfgfile,"w")
+    cfg.write(cfp)
