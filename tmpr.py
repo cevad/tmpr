@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/c/Anaconda/Python
 import math as m
 import Tkinter as tk
 import ttk
