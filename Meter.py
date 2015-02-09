@@ -10,7 +10,7 @@ class Meter(tk.Canvas):
                  tickminor=1,tickmajor=5,
                  **kwargs):
         tk.Canvas.__init__(self,master,highlightthickness=0,**kwargs)
-        self.r=0.9
+        self.r=0.88
         self.dotsize=15
         self.ring=0.8
         self._x=0
