@@ -1,4 +1,4 @@
-#!/c/Anaconda/Python
+#!python
 import math as m
 import Tkinter as tk
 import ttk
@@ -126,7 +126,7 @@ def getwx(sid):
     dat={i.get('var'):i.get('value') for i in ob}
     t=ob.get('time')
     t=str(datetime.datetime.now().year)+' '+t
-    t=t[:-4]
+ #    t=t[:-4]
     t1=datetime.datetime.strptime(t,"%Y %d %b %I:%M %p")
     dat['time']=str(t1)
     dat['sid']=sid
