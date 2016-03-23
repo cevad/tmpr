@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/python
 import math as m
 import Tkinter as tk
 import ttk
